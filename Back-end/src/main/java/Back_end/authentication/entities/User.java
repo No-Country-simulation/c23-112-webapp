@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,15 +37,29 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private String phone;
+
+    @ElementCollection
+    private List<String> profession;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    private List<Experience> experience;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    private List<Education> education;
+
+    @ElementCollection
+    private List<String> skills;
+
+    @Column(length = 1000)
+    private String aboutMe;
+
+    @Column
+    private String cv;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    public User(String userName, String name, String last_name, String password, Role role) {
-        this.userName = userName;
-        this.name = name;
-        this.last_name = last_name;
-        this.password = password;
-        this.role = role;
-    }
 }

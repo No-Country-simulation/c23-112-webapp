@@ -1,15 +1,16 @@
 package Back_end.authentication.models;
 
+
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Builder
 public class LoginResponse {
 
-    private String name;
-    private String last_name;
-    private String email;
-    private String token;
-    private String message;
+    private List<LoginUserResponse> loginUserResponses;
+    private String message;             // Mensaje de respuesta (éxito/error)
+    private String token;               // Token de autenticación
 }

@@ -4,6 +4,7 @@ import Back_end.authentication.dto.LoginUserDto;
 import Back_end.authentication.dto.NewUserDto;
 import Back_end.authentication.entities.User;
 import Back_end.authentication.models.LoginResponse;
+import Back_end.authentication.models.LoginUserResponse;
 import Back_end.authentication.services.AuthService;
 import Back_end.authentication.services.UserService;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,21 +38,38 @@ public class AuthController {
                     .build());
         }
         try {
-            String jwt = authService.authenticate(loginUserDto.getUserName(), loginUserDto.getPassword());
+            // Autenticar al usuario y generar el token
+            String jwt = authService.authenticate(loginUserDto.getEmail(), loginUserDto.getPassword());
 
-            Optional<User> user = userService.getUserByEmail(loginUserDto.getUserName());
-            LoginResponse loginResponse = null;
+            System.out.println(jwt);
+
+            // Obtener el usuario por su nombre de usuario (email)
+            Optional<User> user = userService.getUserByEmail(loginUserDto.getEmail());
 
             if (user.isPresent()) {
-                loginResponse = LoginResponse.builder()
+                // Construir la respuesta del usuario
+                LoginUserResponse userResponse = LoginUserResponse.builder()
+                        .id(user.get().getId())
                         .name(user.get().getName())
                         .last_name(user.get().getLast_name())
                         .email(user.get().getUserName())
-                        .token(jwt)
                         .build();
-            }
-            return ResponseEntity.ok(loginResponse);
+                // Construir la respuesta del login
+                LoginResponse loginResponse = LoginResponse.builder()
+                        .loginUserResponses(List.of(userResponse)) // Agregar la respuesta del usuario
+                        .message("Inicio de sesión exitoso")
+                        .token(jwt) // Agregar el token
+                        .build();
 
+                return ResponseEntity.ok(loginResponse);
+            }
+            else {
+                return ResponseEntity.badRequest().body(
+                        LoginResponse.builder()
+                                .message("Usuario no encontrado")
+                                .build()
+                );
+            }
         } catch (Exception e){
             return ResponseEntity.badRequest().body(LoginResponse.builder()
                     .message(e.getMessage())
