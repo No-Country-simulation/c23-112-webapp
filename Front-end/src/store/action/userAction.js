@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const userLogin = createAsyncThunk('userLogin', async (obj) => {
     try {
-        const { data } = await axios.post('http://localhost:8080/auth/login', obj.data)
+        const { data } = await axios.post('https://back-end-latest-ggv4.onrender.com/auth/login', obj.data)
         console.log({data});
         
         localStorage.setItem('token', JSON.stringify(data.response.token))

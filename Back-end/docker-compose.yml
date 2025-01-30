@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+
+  culinary_jobs:
+    image: culinary_jobs
+    container_name: culinary-jobs-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:mysql://mysql_database:3306/db_recruitment
+      DB_USER_NAME: user
+      DB_PASSWORD: 123456
+      DB_PLATFORM: org.hibernate.dialect.MySQLDialect
+    networks:
+      - spring-network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql
+    container_name: mysql_database
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: db_recruitment
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3307:3306"
+    networks:
+      - spring-network
+    volumes:
+      - mysql-volume:/var/lib/mysql
+
+networks:
+  spring-network:
+volumes:
+  mysql-volume:

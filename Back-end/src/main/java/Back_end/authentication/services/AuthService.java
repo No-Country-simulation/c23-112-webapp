@@ -48,7 +48,7 @@ public class AuthService {
         Role roleUser = roleRepository.findByName(role).orElseThrow(()->new RuntimeException("Rol no encontrado"));
         User user = User.builder()
                 .userName(newUserDto.getUserName())
-                .name(newUserDto.getUserName())
+                .name(newUserDto.getName())
                 .last_name(newUserDto.getLast_name())
                 .password(passwordEncoder.encode(newUserDto.getPassword()))
                 .role(roleUser)

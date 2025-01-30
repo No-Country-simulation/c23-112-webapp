@@ -1,7 +1,7 @@
 package Back_end.authentication.enums;
 
 public enum RoleList {
-    ROLE_USER, ROLE_ADMIN;
+    ROLE_USER_0, ROLE_ADMIN_1;
 
     public static RoleList getById(int id) {
         RoleList[] roles = RoleList.values();
