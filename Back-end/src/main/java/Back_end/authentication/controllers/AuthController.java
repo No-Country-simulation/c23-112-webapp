@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,8 @@ public class AuthController {
                         .id(user.get().getId())
                         .name(user.get().getName())
                         .last_name(user.get().getLast_name())
-                        .email(user.get().getUserName())
+                        .email(user.get().getEmail())
+                        .role(user.get().getRole())
                         .build();
                 // Construir la respuesta del login
                 LoginResponse loginResponse = LoginResponse.builder()

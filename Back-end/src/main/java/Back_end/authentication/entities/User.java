@@ -23,7 +23,7 @@ public class User {
 
     @NotBlank
     @Column(unique = true,nullable = false)
-    private String userName;
+    private String email;
 
     @NotBlank
     @Column(nullable = false)

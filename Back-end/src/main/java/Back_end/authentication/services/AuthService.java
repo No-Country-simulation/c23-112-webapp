@@ -41,13 +41,12 @@ public class AuthService {
     }
 
     public void registerUser(NewUserDto newUserDto){
-        if (userService.existsByUserName(newUserDto.getUserName())){
+        if (userService.existsByUserName(newUserDto.getEmail())){
             throw new IllegalArgumentException("El nombre de usuario ya existe");
         }
-        RoleList role = RoleList.getById(newUserDto.getRol());
-        Role roleUser = roleRepository.findByName(role).orElseThrow(()->new RuntimeException("Rol no encontrado"));
+        Role roleUser = roleRepository.findByName(RoleList.ROLE_USER_0).orElseThrow(()->new RuntimeException("Rol no encontrado"));
         User user = User.builder()
-                .userName(newUserDto.getUserName())
+                .email(newUserDto.getEmail())
                 .name(newUserDto.getName())
                 .last_name(newUserDto.getLast_name())
                 .password(passwordEncoder.encode(newUserDto.getPassword()))
