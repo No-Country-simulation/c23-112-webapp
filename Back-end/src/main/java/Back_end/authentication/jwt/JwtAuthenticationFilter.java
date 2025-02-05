@@ -1,25 +1,24 @@
 package Back_end.authentication.jwt;
 
+import Back_end.authentication.security.CustomAuthenticationToken;
+import Back_end.authentication.security.CustomUserDetails;
 import Back_end.authentication.services.UserService;
-import io.micrometer.common.lang.NonNullApi;
-import io.micrometer.common.lang.NonNullFields;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@NonNullApi
-@NonNullFields
-@NoArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -30,29 +29,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException{
+            throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String userName = null;
-        String jwt = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-            jwt = authorizationHeader.substring(7);
-            userName = jwtUtil.extractUserName(jwt);
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = userService.loadUserByUsername(userName);
+        String jwt = authorizationHeader.substring(7);
+        String userId= jwtUtil.extractUserId(jwt);
+        String userName = jwtUtil.extractUserName(jwt);
+        List<String> roles = jwtUtil.extractRoles(jwt);  // ✅ Extraer roles del token
 
-            if (jwtUtil.validateToken(jwt, userDetails)){
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(userName);
+
+            if (jwtUtil.validateToken(jwt, userDetails)) {
+                // Convertir roles de String a SimpleGrantedAuthority
+                List<SimpleGrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+                // 🔹 Crear un objeto de autenticación personalizado con el ID del usuario
+                CustomAuthenticationToken authToken = new CustomAuthenticationToken(userDetails, null, authorities, userId);
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+
         filterChain.doFilter(request, response);
     }
-
 }
-

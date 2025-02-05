@@ -24,15 +24,19 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usa tu configuración personalizada de CORS
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll() // Permite acceso sin autenticación
-                        .requestMatchers("/**").authenticated() // Requiere autenticación para cualquier otra ruta
+                        .requestMatchers("/auth/register", "/auth/login").permitAll() // Acceso sin autenticación
+                        .requestMatchers("/users/**").hasAnyRole("ADMIN_1","USER_0")  // Solo ADMIN maneja usuarios
+                        .requestMatchers("/jobs").hasAnyRole("USER_0", "ADMIN_1") // Usuarios y admins ven trabajos
+                        .requestMatchers("/jobs/**").hasRole("ADMIN_1") // Solo ADMIN puede crear/editar/eliminar trabajos
+                        .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtEntryPoint()))
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

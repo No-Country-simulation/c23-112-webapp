@@ -1,5 +1,8 @@
 package Back_end.authentication.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -13,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Builder
 @Table(name = "users")
 public class User {
@@ -36,6 +40,9 @@ public class User {
     @NotBlank
     @Column(nullable = false)
     private String password;
+
+    @Column
+    private String photo;
 
     @Column
     private String phone;

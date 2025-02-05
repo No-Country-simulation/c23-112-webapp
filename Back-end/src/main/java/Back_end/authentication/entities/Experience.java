@@ -1,5 +1,7 @@
 package Back_end.authentication.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,13 +9,11 @@ import lombok.Data;
 @Data
 public class Experience {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-
     private String company;
     private String position;
-
-    private String startDate;     // Fecha de inicio (formato "MM/yyyy")
+    private String startDate;
     private String endDate;
 
     @ManyToOne

@@ -54,6 +54,14 @@ public class AuthController {
                         .name(user.get().getName())
                         .last_name(user.get().getLast_name())
                         .email(user.get().getEmail())
+                        .phone(user.get().getPhone())
+                        .phone(user.get().getPhone())
+                        .profession(user.get().getProfession())
+                        .experience(user.get().getExperience())
+                        .education(user.get().getEducation())
+                        .skills(user.get().getSkills())
+                        .aboutMe(user.get().getAboutMe())
+                        .cv(user.get().getCv())
                         .role(user.get().getRole())
                         .build();
                 // Construir la respuesta del login
