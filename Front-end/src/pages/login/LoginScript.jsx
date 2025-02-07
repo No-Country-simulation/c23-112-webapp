@@ -13,6 +13,7 @@ const LoginScript = () =>
     });
 
     const testo = useSelector(store => store.userReducer);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleInput = async (event) => 
     {
@@ -25,18 +26,22 @@ const LoginScript = () =>
     const handleLogin = async (event) => 
     {
         event.preventDefault();
+        setIsLoading(true);
         try {
-            dispatch(userLogin({
+            await dispatch(userLogin({
                 data: loginData
             }));
         } catch (error) {
             console.log('Error en la acción userLogin:', error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
     return {
         handleInput,
-        handleLogin
+        handleLogin,
+        isLoading
     }
 }
 

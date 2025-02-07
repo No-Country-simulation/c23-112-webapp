@@ -7,7 +7,7 @@ import './LoginStyle.css';
 import LoginScript from './LoginScript';
 
 const Login = () => {
-  const { handleInput, handleLogin } = LoginScript();
+  const { handleInput, handleLogin, isLoading } = LoginScript();
 
   return (
     <Container className='d-flex align-items-center justify-content-center' style={{ height: '100vh' }}>
@@ -30,6 +30,7 @@ const Login = () => {
               </Link>
             </div>
           </Form>
+          {isLoading && <p className='text-center mt-3'>Cargando... espere unos minutos</p>}
         </Card.Body>
       </Card>
     </Container>
